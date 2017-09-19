@@ -26,8 +26,3 @@ class XAttribute(object):
 
 		pass
 
-
-if __name__ == "__main__":
-
-	p = XAttribute()
-	p.test()

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ##----------------------------------------------------------
-##file :x_shape.py
+##file :x_object.py
 ##author:xiyuhao
 ##email:695888835@qq.com
 ##----------------------------------------------------------
@@ -16,18 +16,21 @@ import maya.OpenMaya as om
 import pymel.core as pm
 
 
-class XShape(object):
-
+class XObject(object):
+	"""the object class"""
 	def __init__(self):
-
+		"""
+		@the xobject class initialization
+		"""
 		pass
 
-	def test(self):
+	def getObjectInputs(self,obj,type):
+		"""
+		@get the object given type node name
+		"""
+		allInputs = mc.listHistory(obj,pruneDagObjects=True)
+		if allInputs:
+			for input in allInputs:
+				if mc.nodeType(input) == type:
+					return input
 
-		pass
-
-
-if __name__ == "__main__":
-
-	p = XShape()
-	p.test()

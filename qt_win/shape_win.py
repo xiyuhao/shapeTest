@@ -15,15 +15,15 @@ import maya.mel as mel
 import maya.OpenMaya as om
 import pymel.core as pm
 
-from get_maya_win import *
+from qt_win.get_maya_win import *
 
-import shape_cmd
+from qt_win import shape_cmd
 reload(shape_cmd)
-import shape_win_ui
+from qt_win import shape_win_ui
 reload(shape_win_ui)
 
-from shape_cmd import ShapeCmd
-from shape_win_ui import Ui_shapeToolWin
+from qt_win.shape_cmd import ShapeCmd
+from qt_win.shape_win_ui import Ui_shapeToolWin
 
 
 class ShapeWin(Ui_shapeToolWin):
@@ -32,12 +32,48 @@ class ShapeWin(Ui_shapeToolWin):
 
 		Ui_shapeToolWin.setupUi(self,shapeToolWin)
 
+		self.blendShapeTargetSelectPushButton.clicked.connect(lambda:self.selectButtonCmd())
 		self.blendShapeTargetLinkPushButton.clicked.connect(lambda:self.test("link"))
 		self.blendShapeTargetNoPushButton.clicked.connect(lambda:self.test("no"))
 		self.blendShapeImportPushButton.clicked.connect(lambda:self.test("import"))
 		self.blendShapeExportPushButton.clicked.connect(lambda:self.test("export"))
 
 		self.shapeCmd = ShapeCmd()
+
+	def setTreeWidgetText(self,widget,infos):
+		"""
+		@set the given list widget text
+		"""
+		widget.clear()
+		if not infos:
+			return
+		for i,node in enumerate(infos):
+			nodeItem = QtGui.QTreeWidgetItem(widget)
+			nodeItem.setText(0,"Node: %s" %node)
+			widget.insertTopLevelItem(i,nodeItem)
+			for tran in infos[node]:
+				tranItem = QtGui.QTreeWidgetItem(nodeItem)
+				tranItem.setText(0,"Geometry: %s" %tran)
+				for name in infos[node][tran]:
+					nameItem = QtGui.QTreeWidgetItem(tranItem)
+					nameItem.setText(0,"WeightName: %s" %name)
+					for weight in infos[node][tran][name]:
+						weightItem = QtGui.QTreeWidgetItem(nameItem)
+						weightItem.setText(0,"Weight: %s" %weight)
+
+
+	def getListWidgetSelectedItem(self,widget):
+		"""
+		@get the selected item for the given lsitWidget
+		"""
+		pass
+
+	def selectButtonCmd(self):
+		"""
+		@the blendShape target select pushButton command
+		"""
+		blendShapeInfo = self.shapeCmd.getBlendShapeInfo()
+		self.setTreeWidgetText(self.blendShapeTargetNameTreeWidget,blendShapeInfo)
 
 	def test(self,str):
 
