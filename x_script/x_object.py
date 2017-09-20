@@ -39,7 +39,7 @@ class XObject(object):
 		@get the given object bounding box
 		"""
 		obj = self.getTransformNode(obj)
-		if objType:
+		if obj:
 			xmin,ymin,zmin,xmax,ymax,zmax = mc.xform(obj,q=True,boundingBox=True)
 			xWeight = xmax - xmin
 			return xWeight
@@ -63,12 +63,21 @@ class XObject(object):
 		"""
 		@get the intermediate shape
 		"""
-		self.getTransformNode(node)
+		node = self.getTransformNode(node)
 		shapes = mc.listRelatives(node,s=True,f=True)
 		if shapes:
 			for shape in shapes:
 				if mc.getAttr("%s.intermediateObject" %shape):
 					return shape
+
+	def getObjShape(self,node):
+		"""
+		@get object shape
+		"""
+		node = self.getTransformNode(node)
+		shapes = mc.listRelatives(node,s=True,f=True,ni=True)
+		if shapes:
+			return shapes[0]
 
 	def duplicateObject(self,obj,name):
 		"""
@@ -85,4 +94,4 @@ class XObject(object):
 if __name__ == "__main__":
 
 	f = XObject()
-	f.duplicateObject("pSphereShape1","ff")
+	f.getObjShape("pSphereShape1")

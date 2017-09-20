@@ -22,7 +22,36 @@ class XAttribute(object):
 
 		pass
 
+	def quickUnLockObjAttr(self,obj,*args):
+		"""
+		@quick unlock given object attributs
+		"""
+		if not args:
+			attrs = mc.listAttr(obj,keyable=True)
+			for attr in attrs:
+				mc.setAttr("%s.%s" %(obj,attr),lock=False)
+		else:
+			for attr in args:
+				mc.setAttr("%s.%s" %(obj,attr),lock=False)
+
+	def quickLockObjAttr(self,obj,*args):
+		"""
+		@quick lock object attributes
+		"""
+		if not args:
+			attrs = mc.listAttr(obj,keyable=True)
+			for attr in attrs:
+				mc.setAttr("%s.%s" %(obj,attr),lock=True)
+		else:
+			for attr in args:
+				mc.setAttr("%s.%s" %(obj,attr),lock=True)
+
 	def test(self):
 
 		pass
 
+
+if __name__ == "__main__":
+
+	p = XAttribute()
+	p.quickUnLockObjAttr("blendShape1_pSphere2_5500_blsGeo")
