@@ -32,8 +32,10 @@ class ShapeWin(Ui_shapeToolWin):
 
 		Ui_shapeToolWin.setupUi(self,shapeToolWin)
 
-		self.blendShapeTargetSelectPushButton.clicked.connect(lambda:self.selectButtonCmd())
-		self.blendShapeTargetLinkPushButton.clicked.connect(lambda:self.test("link"))
+		self.blendShapeTargetSelectPushButton.clicked.connect(
+								lambda:self.blendShapeTargetSelectButtonCmd())
+		self.blendShapeTargetLinkPushButton.clicked.connect(
+								lambda:self.blendShapeTargetLinkButtonCmd())
 		self.blendShapeTargetNoPushButton.clicked.connect(lambda:self.test("no"))
 		self.blendShapeImportPushButton.clicked.connect(lambda:self.test("import"))
 		self.blendShapeExportPushButton.clicked.connect(lambda:self.test("export"))
@@ -61,19 +63,35 @@ class ShapeWin(Ui_shapeToolWin):
 						weightItem = QtGui.QTreeWidgetItem(nameItem)
 						weightItem.setText(0,"Weight: %s" %weight)
 
-
-	def getListWidgetSelectedItem(self,widget):
+	def getTreeWidgetSelectedItem(self,widget):
 		"""
 		@get the selected item for the given lsitWidget
 		"""
-		pass
+		texts = []
+		items = widget.selectedItems()
+		for item in items:
+			text = item.text(0).split()[-1]
+			parentItem = item.parent()
+			while item.parent():
+				parentText = item.parent().text(0).split()[-1]
+				text = "%s %s" %(parentText,text)
+				item = item.parent()
+			texts.append(text)
+		return texts
 
-	def selectButtonCmd(self):
+	def blendShapeTargetSelectButtonCmd(self):
 		"""
 		@the blendShape target select pushButton command
 		"""
 		blendShapeInfo = self.shapeCmd.getBlendShapeInfo()
 		self.setTreeWidgetText(self.blendShapeTargetNameTreeWidget,blendShapeInfo)
+
+	def blendShapeTargetLinkButtonCmd(self):
+		"""
+		@the blendShape target link pushButton command
+		"""
+		texts = self.getTreeWidgetSelectedItem(self.blendShapeTargetNameTreeWidget)
+		self.shapeCmd.linkBlendShapeTarget(texts)
 
 	def test(self,str):
 

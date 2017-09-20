@@ -80,10 +80,123 @@ class XBlendShape(object):
 		for num in nums:
 			newNum = (num - 5000.0) / 1000
 			weights.append(newNum)
-		return weights 
+		return weights
+
+	def getBlendShapeWeightAttrFromText(self,texts):
+		"""
+		@get blendShape weight attrbiute from given text
+		"""
+		attrs = []
+		if not texts:
+			return
+		if not isinstance(texts,list):
+			texts = [texts]
+		for text in texts:
+			names = text.split()
+			num = len(names)
+			if num == 1:
+				rAttrs = self.findBlendShapeAttrFromNodeName(names[0])
+				attrs.extend(rAttrs)
+			elif num == 2:
+				rAttrs = self.findBlendShapeAttrFromGeoName(names[0],names[1])
+				attrs.extend(rAttrs)
+			elif num == 3:
+				rAttrs = self.findBlendShapeAttrFromWeightName(names[0],names[1],names[2])
+				attrs.extend(rAttrs)
+			elif num == 4:
+				rAttrs = self.findBlendShapeAttrFromWeightValue(names[0],names[1],names[2],names[3])
+				attrs.extend(rAttrs)
+			else:
+				continue
+		nAttrs = list(set(attrs))
+		return nAttrs
+
+	def findBlendShapeAttrFromNodeName(self,node):
+		"""
+		@find the blendShape attribute from blendShape node name
+		"""
+		attrs = []
+		numGeos = mc.getAttr("%s.inputTarget" %node,multiIndices=True)
+		for numGeo in numGeos:
+			numNames = mc.getAttr("%s.inputTarget[%s].inputTargetGroup"
+								 %(node,numGeo),multiIndices=True)
+			for numName in numNames:
+				numWeights = mc.getAttr(
+						"%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem"
+						%(node,numGeo,numName),multiIndices=True)
+				for numWeight in numWeights:
+					attr = "%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem[%s]" \
+							%(node,numGeo,numName,numWeight)
+					attrs.append(attr)
+		return attrs
+
+	def findBlendShapeAttrFromGeoName(self,node,geo):
+		"""
+		@find the blendShape attribute from blendShape geometry name
+		"""
+		attrs = []
+		geoName = self.getBlendShapeGeometry(node)
+		geoNum = mc.getAttr("%s.inputTarget" %node,multiIndices=True)
+		geoIdx = geoName.index(geo)
+		numGeo = geoNum[geoIdx]
+		numNames = mc.getAttr("%s.inputTarget[%s].inputTargetGroup"
+							 %(node,numGeo),multiIndices=True)
+		for numName in numNames:
+			numWeights = mc.getAttr(
+					"%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem"
+					%(node,numGeo,numName),multiIndices=True)
+			for numWeight in numWeights:
+				attr = "%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem[%s]" \
+						%(node,numGeo,numName,numWeight)
+				print attr
+				attrs.append(attr)
+		return attrs
+
+	def findBlendShapeAttrFromWeightName(self,node,geo,name):
+		"""
+		@find blendShape attrbitue from weight name
+		"""
+		attrs = []
+		geoName = self.getBlendShapeGeometry(node)
+		geoNum = mc.getAttr("%s.inputTarget" %node,multiIndices=True)
+		geoIdx = geoName.index(geo)
+		numGeo = geoNum[geoIdx]
+		weightName = self.getBlendShapeWeightName(node)
+		nameNum = mc.getAttr("%s.inputTarget[%s].inputTargetGroup"
+							 %(node,numGeo),multiIndices=True)
+		nameIdx = weightName.index(name)
+		numName = nameNum[nameIdx]
+		numWeights = mc.getAttr(
+				"%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem"
+				%(node,numGeo,numName),multiIndices=True)
+		for numWeight in numWeights:
+			attr = "%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem[%s]" \
+					%(node,numGeo,numName,numWeight)
+			print attr
+			attrs.append(attr)
+		return attrs
+
+	def findBlendShapeAttrFromWeightValue(self,node,geo,name,weight):
+		"""
+		@find blendShape attribute from weight value
+		"""
+		attrs = []
+		geoName = self.getBlendShapeGeometry(node)
+		geoNum = mc.getAttr("%s.inputTarget" %node,multiIndices=True)
+		geoIdx = geoName.index(geo)
+		numGeo = geoNum[geoIdx]
+		weightName = self.getBlendShapeWeightName(node)
+		nameNum = mc.getAttr("%s.inputTarget[%s].inputTargetGroup"
+							 %(node,numGeo),multiIndices=True)
+		nameIdx = weightName.index(name)
+		numName = nameNum[nameIdx]
+		numWeight = int(1000 * float(weight) + 5000)
+		attr = "%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem[%s]" \
+				%(node,numGeo,numName,numWeight)
+		attrs.append(attr)
+		return attrs
 
 if __name__ == "__main__":
 
 	p = XBlendShape()
-	s = p.getBlendShapeNodes()
-	print s
+	s = p.getBlendShapeWeightAttrFromText(["DD pSphere1 pSphere5 0.8","DD pSphere1 pSphere2 0.4"])

@@ -118,6 +118,9 @@
                  <bold>true</bold>
                 </font>
                </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::ExtendedSelection</enum>
+               </property>
                <column>
                 <property name="text">
                  <string>BlendShape Node</string>

@@ -28,8 +28,12 @@ class XShape(object):
 		"""
 		pass
 
-
 	def test(self):
 
 		pass
 
+
+if __name__ == "__main__":
+
+	p = XShape()
+	p.test()

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'I:/gitHubDesktop/shapeTest/qt_win/shape_win.ui'
 #
-# Created: Tue Sep 19 16:06:44 2017
+# Created: Tue Sep 19 17:51:55 2017
 #      by: pyside-uic 0.2.14 running on PySide 1.2.0
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,6 +80,7 @@ class Ui_shapeToolWin(object):
         font.setWeight(75)
         font.setBold(True)
         self.blendShapeTargetNameTreeWidget.setFont(font)
+        self.blendShapeTargetNameTreeWidget.setSelectionMode(QtGui.QAbstractItemView.ExtendedSelection)
         self.blendShapeTargetNameTreeWidget.setObjectName("blendShapeTargetNameTreeWidget")
         self.horizontalLayout_4.addWidget(self.blendShapeTargetNameTreeWidget)
         self.blendShapeTargetSelectPushButton = QtGui.QPushButton(self.blendShapeTargetPage)
