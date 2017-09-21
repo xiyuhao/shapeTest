@@ -22,9 +22,9 @@ class XShape(object):
 
 		pass
 
-	def getShape(self,name,type="mesh"):
+	def getShapeVtxPosition(self,name):
 		"""
-		@get the shape of given name
+		@
 		"""
 		pass
 

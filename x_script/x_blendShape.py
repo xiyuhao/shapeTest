@@ -196,6 +196,24 @@ class XBlendShape(object):
 		attrs.append(attr)
 		return attrs
 
+	def fromAttrGetNameInfo(self,attr):
+		"""
+		@from given attribute get name informations
+		"""
+		if not attr:
+			return
+		if not mc.objExists(attr):
+			return
+		node,geo,name,weight = attr.split(".")
+		geoIdx = geo.split("[")[-1].split("]")[0]
+		geoShapes = mc.blendShape(node,q=True,geometry=True)
+		geoShape = geoShapes[int(geoIdx)]
+		weightNameIdx = name.split("[")[-1].split("]")[0]
+		weightNames = self.getBlendShapeWeightName(node)
+		weightName = weightNames[int(weightNameIdx)]
+		weightValue = weight.split("[")[-1].split("]")[0]
+		return node,geoShape,weightName,weightValue
+
 if __name__ == "__main__":
 
 	p = XBlendShape()

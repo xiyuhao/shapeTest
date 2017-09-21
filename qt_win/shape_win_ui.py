@@ -195,7 +195,7 @@ class Ui_shapeToolWin(object):
 
     def retranslateUi(self, shapeToolWin):
         shapeToolWin.setWindowTitle(QtGui.QApplication.translate("shapeToolWin", "Shape Tool Window", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("shapeToolWin", "                    Some Tool For Maya Shape", None, QtGui.QApplication.UnicodeUTF8))
+        self.label.setText(QtGui.QApplication.translate("shapeToolWin", "                Some Tool For Maya Shape", None, QtGui.QApplication.UnicodeUTF8))
         self.shapeToolGroupBox.setTitle(QtGui.QApplication.translate("shapeToolWin", "Shape Tool", None, QtGui.QApplication.UnicodeUTF8))
         __sortingEnabled = self.shapeToolListWidget.isSortingEnabled()
         self.shapeToolListWidget.setSortingEnabled(False)

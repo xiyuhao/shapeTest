@@ -57,7 +57,7 @@ class ShapeCmd(object):
 						infos[node][tran][name] = weights
 		return infos
 
-	def linkBlendShapeTarget(self,texts):
+	def linkOrNoBlendShapeTarget(self,texts,mode=True):
 		"""
 		@link blendShape target from given text
 		"""
@@ -70,30 +70,23 @@ class ShapeCmd(object):
 			return
 		i = 1
 		for attr in attrs:
-			node,geo,name,weight = attr.split(".")
-			geoIdx = geo.split("[")[-1].split("]")[0]
-			shape = mc.blendShape(node,q=True,geometry=True)[int(geoIdx)]
-			weightNames = self.blendShape.getBlendShapeWeightName(node)
-			nameIdx = name.split("[")[-1].split("]")[0]
-			weightName = weightNames[int(nameIdx)]
-			newWeight = weight.split("[")[-1].split("]")[0]
-			parentNode = mc.listRelatives(shape,p=True,fullPath=True)[0]
-			shapeOrg = self.object.getIntermediateShape(shape)
+			node,geoShape,weightName,weightValue = self.blendShape.fromAttrGetNameInfo(attr)
+			parentNode = mc.listRelatives(geoShape,p=True,fullPath=True)[0]
+			shapeOrg = self.object.getIntermediateShape(geoShape)
 			pmOrg = pm.PyNode(shapeOrg)
 			pmInTarget = pm.PyNode("%s.inputGeomTarget" %attr)
 			pmPoints = pm.PyNode("%s.inputPointsTarget" %attr)
 			pmComps = pm.PyNode("%s.inputComponentsTarget" %attr)
 			if pmInTarget.isConnected():
 				continue
-			newObj = self.object.duplicateObject(shape,"%s_%s_%s_blsGeo" 
-												%(node,weightName,newWeight))
+			newObj = self.object.duplicateObject(geoShape,"%s_%s_%s_blsGeo" 
+												%(node,weightName,weightValue))
 			newShape = self.object.getObjShape(newObj)
 			newShape = pm.PyNode(newShape)
-			xValue = self.object.getObjectBoundingBox(shape)
+			xValue = self.object.getObjectBoundingBox(geoShape)
 			self.attribute.quickUnLockObjAttr(newObj)
 			mc.setAttr("%s.tx" %newObj,xValue*i)
 			points = []
-			print pmOrg
 			for vtx in pmOrg.vtx:
 				point = vtx.getPosition()
 				points.append(point)
@@ -109,8 +102,21 @@ class ShapeCmd(object):
 						j += 1
 			for n,nVtx in enumerate(newShape.vtx):	
 				nVtx.setPosition(points[n])
-			newShape.outMesh.connect(pmInTarget)
+			if mode:
+				newShape.outMesh.connect(pmInTarget)
 			i += 1
+
+	def exportBlendShapeTarget(self,texts):
+		"""
+		@export blendShape target
+		"""
+		if not texts:
+			return
+		if not isinstance(texts,list):
+			texts = [texts]
+		attrs = self.blendShape.getBlendShapeWeightAttrFromText(texts)
+		if not attrs:
+			return
 
 	def test(self):
 

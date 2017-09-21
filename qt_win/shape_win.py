@@ -36,7 +36,8 @@ class ShapeWin(Ui_shapeToolWin):
 								lambda:self.blendShapeTargetSelectButtonCmd())
 		self.blendShapeTargetLinkPushButton.clicked.connect(
 								lambda:self.blendShapeTargetLinkButtonCmd())
-		self.blendShapeTargetNoPushButton.clicked.connect(lambda:self.test("no"))
+		self.blendShapeTargetNoPushButton.clicked.connect(
+								lambda:self.blendShapeTargetNoButtonCmd())
 		self.blendShapeImportPushButton.clicked.connect(lambda:self.test("import"))
 		self.blendShapeExportPushButton.clicked.connect(lambda:self.test("export"))
 
@@ -91,7 +92,14 @@ class ShapeWin(Ui_shapeToolWin):
 		@the blendShape target link pushButton command
 		"""
 		texts = self.getTreeWidgetSelectedItem(self.blendShapeTargetNameTreeWidget)
-		self.shapeCmd.linkBlendShapeTarget(texts)
+		self.shapeCmd.linkOrNoBlendShapeTarget(texts)
+
+	def blendShapeTargetNoButtonCmd(self):
+		"""
+		@the blendShape target no link pushButton command
+		"""
+		texts = self.getTreeWidgetSelectedItem(self.blendShapeTargetNameTreeWidget)
+		self.shapeCmd.linkOrNoBlendShapeTarget(texts,False)
 
 	def test(self,str):
 
