@@ -23,11 +23,14 @@ from x_script import x_object
 reload(x_object)
 from x_script import x_attribute
 reload(x_attribute)
+from x_script import x_math
+reload(x_math)
 
 from x_script.x_blendShape import XBlendShape
 from x_script.x_shape import XShape
 from x_script.x_object import XObject
-from x_script.x_attribute import XAttribute 
+from x_script.x_attribute import XAttribute
+from x_script.x_math import XMath
 
 
 class ShapeCmd(object):
@@ -38,6 +41,7 @@ class ShapeCmd(object):
 		self.shape = XShape()
 		self.object = XObject()
 		self.attribute = XAttribute()
+		self.math = XMath()
 
 	def getBlendShapeInfo(self):
 		"""
@@ -69,41 +73,29 @@ class ShapeCmd(object):
 		if not attrs:
 			return
 		i = 1
+		allDict = {}
 		for attr in attrs:
 			node,geoShape,weightName,weightValue = self.blendShape.fromAttrGetNameInfo(attr)
 			parentNode = mc.listRelatives(geoShape,p=True,fullPath=True)[0]
 			shapeOrg = self.object.getIntermediateShape(geoShape)
-			pmOrg = pm.PyNode(shapeOrg)
+			if shapeOrg in allDict:
+				orgPoints = allDict[shapeOrg]
+			else:
+				orgPoints = self.shape.getShapeVtxPosition(shapeOrg)
+				allDict[shapeOrg] = orgPoints
 			pmInTarget = pm.PyNode("%s.inputGeomTarget" %attr)
-			pmPoints = pm.PyNode("%s.inputPointsTarget" %attr)
-			pmComps = pm.PyNode("%s.inputComponentsTarget" %attr)
 			if pmInTarget.isConnected():
 				continue
+			compPoints = self.blendShape.getBlendShapePointDict(attr)
+			points = self.math.addTwoPointDict(orgPoints,compPoints)
 			newObj = self.object.duplicateObject(geoShape,"%s_%s_%s_blsGeo" 
 												%(node,weightName,weightValue))
-			newShape = self.object.getObjShape(newObj)
-			newShape = pm.PyNode(newShape)
 			xValue = self.object.getObjectBoundingBox(geoShape)
 			self.attribute.quickUnLockObjAttr(newObj)
 			mc.setAttr("%s.tx" %newObj,xValue*i)
-			points = []
-			for vtx in pmOrg.vtx:
-				point = vtx.getPosition()
-				points.append(point)
-			compsVtx = pmComps.get()
-			compsPoint = pmPoints.get()
-			if compsVtx:
-				j = 0
-				for compVtx in compsVtx:
-					compVtx = pm.general.MeshVertex("%s.%s" %(shapeOrg,compVtx))
-					for vtx in compVtx:
-						vIdx = vtx.split("[")[-1].split("]")[0]
-						points[int(vIdx)] = points[int(vIdx)] + compsPoint[j]
-						j += 1
-			for n,nVtx in enumerate(newShape.vtx):	
-				nVtx.setPosition(points[n])
+			self.shape.setShapeVtxPosition(newObj,points)
 			if mode:
-				newShape.outMesh.connect(pmInTarget)
+				pm.PyNode(newObj).outMesh.connect(pmInTarget)
 			i += 1
 
 	def exportBlendShapeTarget(self,texts):

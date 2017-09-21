@@ -148,7 +148,6 @@ class XBlendShape(object):
 			for numWeight in numWeights:
 				attr = "%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem[%s]" \
 						%(node,numGeo,numName,numWeight)
-				print attr
 				attrs.append(attr)
 		return attrs
 
@@ -172,7 +171,6 @@ class XBlendShape(object):
 		for numWeight in numWeights:
 			attr = "%s.inputTarget[%s].inputTargetGroup[%s].inputTargetItem[%s]" \
 					%(node,numGeo,numName,numWeight)
-			print attr
 			attrs.append(attr)
 		return attrs
 
@@ -214,7 +212,28 @@ class XBlendShape(object):
 		weightValue = weight.split("[")[-1].split("]")[0]
 		return node,geoShape,weightName,weightValue
 
+	def getBlendShapePointDict(self,attr):
+		"""
+		@from given attribute get bendShape points informations
+		"""
+		points = {}
+		geoName = self.fromAttrGetNameInfo(attr)[1]
+		pmPoints = pm.PyNode("%s.inputPointsTarget" %attr)
+		compPoints = pmPoints.get()
+		pmComps = pm.PyNode("%s.inputComponentsTarget" %attr)
+		compVtxs = pmComps.get()
+		i = 0
+		if compVtxs:
+			for compVtx in compVtxs:
+				vtxs = pm.PyNode("%s.%s" %(geoName,compVtx))
+				for vtx in vtxs:
+					idx = vtx.split(".")[-1]
+					points[idx] = compPoints[i]
+					i += 1
+		return points
+
+
 if __name__ == "__main__":
 
 	p = XBlendShape()
-	s = p.getBlendShapeWeightAttrFromText(["DD pSphere1 pSphere5 0.8","DD pSphere1 pSphere2 0.4"])
+	s = p.getBlendShapePointDict("DD.it[0].itg[0].iti[6000]")
