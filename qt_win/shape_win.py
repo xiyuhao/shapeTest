@@ -40,8 +40,18 @@ class ShapeWin(Ui_shapeToolWin):
 								lambda:self.blendShapeTargetNoButtonCmd())
 		self.blendShapeImportPushButton.clicked.connect(lambda:self.test("import"))
 		self.blendShapeExportPushButton.clicked.connect(lambda:self.test("export"))
+		self.splitShapeCreatePushButton.clicked.connect(
+								lambda:self.splitShapeCreatePushButtonCmd())
+		self.splitShapeSplitPushButton.clicked.connect(
+								lambda:self.splitShapeSplitPushButtonCmd())
 
 		self.shapeCmd = ShapeCmd()
+
+		if not mc.pluginInfo("splitShape.mll",q=True,loaded=True):
+			try:
+				mc.loadPlugin("splitShape.mll",quiet=True)
+			except:
+				print "load splitShape is failed"
 
 	def setTreeWidgetText(self,widget,infos):
 		"""
@@ -100,6 +110,26 @@ class ShapeWin(Ui_shapeToolWin):
 		"""
 		texts = self.getTreeWidgetSelectedItem(self.blendShapeTargetNameTreeWidget)
 		self.shapeCmd.linkOrNoBlendShapeTarget(texts,False)
+
+	def splitShapeCreatePushButtonCmd(self):
+		"""
+		@the split shape create button command
+		"""
+		sels = mc.ls(sl=True,type="transform")
+		if sels and len(sels) >=4:
+			self.shapeCmd.createSplitShapeNode(sels[0],sels[1],sels[2],sels[3])
+		else:
+			print "please select the sculptObj,origObj,skinObj,outObj"
+
+	def splitShapeSplitPushButtonCmd(self):
+		"""
+		@the split shape split button command
+		"""
+		sels = mc.ls(sl=True,type="transform")
+		if not sels:
+			print "please select splitShapeNode object"
+		else:
+			self.shapeCmd.batchGetSplitShapeOuts(sels)
 
 	def test(self,str):
 

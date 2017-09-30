@@ -34,13 +34,20 @@ class XObject(object):
 				if mc.nodeType(input) == type:
 					return input
 
-	def getObjectBoundingBox(self,obj):
+	def getObjectBoundingBox(self,obj,mode=0):
 		"""
 		@get the given object bounding box
 		"""
 		obj = self.getTransformNode(obj)
 		if obj:
 			xmin,ymin,zmin,xmax,ymax,zmax = mc.xform(obj,q=True,boundingBox=True)
+		if mode == 1:
+			yWeight = ymax - ymin
+			return yWeight
+		elif mode == 2:
+			zWeight = zmax - zmin
+			return zWeight
+		else:
 			xWeight = xmax - xmin
 			return xWeight
 
@@ -94,4 +101,4 @@ class XObject(object):
 if __name__ == "__main__":
 
 	f = XObject()
-	f.getObjShape("pSphereShape1")
+	print f.getObjectInputs("pSphere1","skinCluster")
